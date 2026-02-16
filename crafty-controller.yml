@@ -1,0 +1,78 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: crafty
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: crafty
+  namespace: crafty
+  labels:
+    app: crafty
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: crafty
+  template:
+    metadata:
+      labels:
+        app: crafty
+    spec:
+      hostNetwork: true
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+        - name: crafty
+          image: registry.gitlab.com/crafty-controller/crafty-4:latest
+          imagePullPolicy: Always
+          env:
+            - name: TZ
+              value: "Etc/UTC"
+          ports:
+            - name: https
+              containerPort: 8443
+              protocol: TCP
+            - name: dynmap
+              containerPort: 8123
+              protocol: TCP
+            - name: bedrock
+              containerPort: 19132
+              protocol: UDP
+            - name: mc-range
+              containerPort: 25500
+              protocol: TCP
+          volumeMounts:
+            - name: backups
+              mountPath: /crafty/backups
+            - name: logs
+              mountPath: /crafty/logs
+            - name: servers
+              mountPath: /crafty/servers
+            - name: config
+              mountPath: /crafty/app/config
+            - name: import
+              mountPath: /crafty/import
+      volumes:
+        - name: backups
+          hostPath:
+            path: /srv/docker/crafty-4/backups
+            type: DirectoryOrCreate
+        - name: logs
+          hostPath:
+            path: /srv/docker/crafty-4/logs
+            type: DirectoryOrCreate
+        - name: servers
+          hostPath:
+            path: /srv/docker/crafty-4/servers
+            type: DirectoryOrCreate
+        - name: config
+          hostPath:
+            path: /srv/docker/crafty-4/config
+            type: DirectoryOrCreate
+        - name: import
+          hostPath:
+            path: /srv/docker/crafty-4/import
+            type: DirectoryOrCreate
+
