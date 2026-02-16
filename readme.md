@@ -54,5 +54,3 @@ El archivo `crafty-controller.yml` monta los siguientes volúmenes desde el host
 - `config`: Configuración de la aplicación.
 - `import`: Directorio para importar servidores existentes.
 
----
-Generado automáticamente.
